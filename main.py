@@ -7,8 +7,6 @@ import sys
 import csv
 import operator
 
-FIELD_NAMES = ['Transaction_date', 'Product', 'Price', 'Payment_Type', 'City', 'State', 'Country', 'Name', 'Account_Created', 'Last_Login', 'Latitude', 'Longitude']
-
 if len(sys.argv) != 2:
 	print "Useage: ./main.py your_csv_file.csv"
 	exit(1)
@@ -21,6 +19,7 @@ csv_file_name = sys.argv[1]
 def sort_data():
 	with open (csv_file_name, 'r') as csv_file:
 		reader =  csv.reader(csv_file, delimiter = ',')
+		
 		sorted_csv = sorted(reader, key = operator.itemgetter(SORT_BY_COLUMN_NUMBER))
 		for row in sorted_csv:
 			print ', '.join(row)
@@ -32,15 +31,42 @@ def count_amandas():
 
 	with open(csv_file_name, 'r') as csv_file:
 		reader = csv.reader(csv_file, delimiter = ',')
+		
 		for row in reader:
 			for field in row:
-				if isinstance(field, basestring):
-					if "amanda" in field.lower():
-						number_of_amandas += 1
-
+				if "amanda" in field.lower():
+					number_of_amandas += 1
 
 	print ("The file contains %(number_of_amandas)i customers named Amanda." % locals())
 
 
+# returns the mean of a list of numbers
+# https://stackoverflow.com/questions/7716331/calculating-arithmetic-mean-average-in-python
+def mean(numbers):
+	return float(sum(numbers)) / max(len(numbers), 1)
+
+
+# prints the avarage transaction amount
+def average_transaction():
+	row_count = 0
+	transaction_prices = []
+
+	with open(csv_file_name, 'r') as csv_file:
+		reader = csv.reader(csv_file, delimiter = ',')
+
+		for row in reader:
+			if row_count > 0:
+				field_count = 0
+				for field in row:
+					field_count += 1
+					if field_count == 3 and field:
+						transaction_prices.append(float(field))
+			row_count += 1
+
+	average_transaction_price = mean(transaction_prices)
+	print ("The average transaction price is $%(average_transaction_price)f" % locals())
+
+
 sort_data()
 count_amandas()
+average_transaction()
