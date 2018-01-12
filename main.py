@@ -15,27 +15,30 @@ SORT_BY_COLUMN_NUMBER = 1
 csv_file_name = sys.argv[1]
 
 
-# sorts csv data by given column number
-def sort_data():
+def open_file():
+	file = []
 	with open (csv_file_name, 'r') as csv_file:
 		reader =  csv.reader(csv_file, delimiter = ',')
-		
-		sorted_csv = sorted(reader, key = operator.itemgetter(SORT_BY_COLUMN_NUMBER))
-		for row in sorted_csv:
-			print ', '.join(row)
+		for row in reader:
+			file.append(row)
+	return file
+
+
+# sorts csv data by given column number
+def sort_data():
+	sorted_csv = sorted(open_file(), key = operator.itemgetter(SORT_BY_COLUMN_NUMBER))
+	for row in sorted_csv:
+		print ', '.join(row)
 
 
 # prints a count of the number of customers named "Amanda"
 def count_amandas():
 	number_of_amandas = 0
 
-	with open(csv_file_name, 'r') as csv_file:
-		reader = csv.reader(csv_file, delimiter = ',')
-		
-		for row in reader:
-			for field in row:
-				if "amanda" in field.lower():
-					number_of_amandas += 1
+	for row in open_file():
+		for field in row:
+			if "amanda" in field.lower():
+				number_of_amandas += 1
 
 	print ("The file contains %(number_of_amandas)i customers named Amanda." % locals())
 
@@ -51,17 +54,14 @@ def average_transaction():
 	row_count = 0
 	transaction_prices = []
 
-	with open(csv_file_name, 'r') as csv_file:
-		reader = csv.reader(csv_file, delimiter = ',')
-
-		for row in reader:
-			if row_count > 0:
-				field_count = 0
-				for field in row:
-					field_count += 1
-					if field_count == 3 and field:
-						transaction_prices.append(float(field))
-			row_count += 1
+	for row in open_file():
+		if row_count > 0:
+			field_count = 0
+			for field in row:
+				field_count += 1
+				if field_count == 3 and field:
+					transaction_prices.append(float(field))
+		row_count += 1
 
 	average_transaction_price = mean(transaction_prices)
 	print ("The average transaction price is $%(average_transaction_price)f" % locals())
