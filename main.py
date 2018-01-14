@@ -15,9 +15,9 @@ SORT_BY_COLUMN_NUMBER = 1
 csv_file_name = sys.argv[1]
 
 
-def open_file():
+def read_file():
 	file = []
-	with open (csv_file_name, 'r') as csv_file:
+	with open(csv_file_name, 'r') as csv_file:
 		reader =  csv.reader(csv_file, delimiter = ',')
 		for row in reader:
 			file.append(row)
@@ -26,7 +26,7 @@ def open_file():
 
 # sorts csv data by given column number
 def sort_data():
-	sorted_csv = sorted(open_file(), key = operator.itemgetter(SORT_BY_COLUMN_NUMBER))
+	sorted_csv = sorted(read_file(), key = operator.itemgetter(SORT_BY_COLUMN_NUMBER))
 	for row in sorted_csv:
 		print ', '.join(row)
 
@@ -35,7 +35,7 @@ def sort_data():
 def count_amandas():
 	number_of_amandas = 0
 
-	for row in open_file():
+	for row in read_file():
 		for field in row:
 			if "amanda" in field.lower():
 				number_of_amandas += 1
@@ -54,7 +54,7 @@ def average_transaction():
 	row_count = 0
 	transaction_prices = []
 
-	for row in open_file():
+	for row in read_file():
 		if row_count > 0:
 			field_count = 0
 			for field in row:
@@ -67,6 +67,23 @@ def average_transaction():
 	print ("The average transaction price is $%(average_transaction_price)f" % locals())
 
 
+# replaces every occurance of united states with USA
+def replace_united_states():
+	new_file = open("alteredFile.csv", "wb")
+	new_contents = []
+
+	for row in read_file():
+		for field in row:
+			if "united states" in field.lower():
+				new_contents.append("USA,")
+			else:	
+				new_contents.append("%(field)s," % locals())
+		new_contents.append("\n")
+	new_file.writelines(new_contents)
+	new_file.close()
+
+
 sort_data()
 count_amandas()
 average_transaction()
+replace_united_states()
